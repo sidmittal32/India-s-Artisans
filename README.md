@@ -55,11 +55,11 @@ To set up IndiasArtisans locally, follow these steps:
 These steps allow artisans to showcase their craft and customers to discover and support authentic handmade goods." 
 
 ## Screenshots
-![landing_page](web_flask\static\images\landing_page.png)
-![sign_in](web_flask\static\images\sign_in.png)
-![sign_up](web_flask\static\images\sign_up.png)
-![artisans](web_flask\static\images\artisans.png)
-![products](web_flask\static\images\products.png)
-![product_page](web_flask\static\images\product_page.png)
-![checkout](web_flask\static\images\checkout.png)
-![previous_orders](web_flask\static\images\previous_orders.png)
+![landing_page](\web_flask\static\images\landing_page.png)
+![sign_in](\web_flask\static\images\sign_in.png)
+![sign_up](\web_flask\static\images\sign_up.png)
+![artisans](\web_flask\static\images\artisans.png)
+![products](\web_flask\static\images\products.png)
+![product_page](\web_flask\static\images\product_page.png)
+![checkout](\web_flask\static\images\checkout.png)
+![previous_orders](\web_flask\static\images\previous_orders.png)
