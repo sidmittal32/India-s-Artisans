@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Orders</title>
+		<link rel = "stylesheet" href = "../static/styles/home.css">
+        <link rel = "stylesheet" href = "../static/styles/product.css">
+        <link rel = "stylesheet" href = "../static/styles/order.css">
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+		<link rel="icon" href="../static/images/logo.png" />
+		<!-- Import JQuery -->
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<!-- Import JavaScript file -->
+		<script type="text/javascript" src="../static/scripts/artisan_orders.js"></script>
+	</head>
+	<body>
+
+		<!-- header -->
+		<header id = "header">
+
+			<!-- top navbar -->
+			<nav class = "top-navbar flex">
+				<div class = "container flex">
+					<!-- logo -->
+					<a href = "{{ url_for('home') }}" class = "navbar-brand flex">
+						<div class="logo"></div>
+						<span class = "brand-text">India's Artisans</span>
+					</a>
+					<!-- end of logo -->
+					<ul class = "navbar-nav-right flex">
+						<a href = "{{ url_for('home') }}" class = "nav-link">Home</a>
+                        <a href = "{{ url_for('explore_artisans') }}" class = "nav-link">Artisans</a>
+                        <a href = "{{ url_for('explore_products') }}" class = "nav-link">Products</a>
+                        {% if not current_user.is_authenticated %}
+                            <a href = "{{ url_for('artisan_sign_up') }}" class = "nav-link">Sell With Us</a>
+                        {% endif %}
+                        <a href = "{{ url_for('about') }}" class = "nav-link">About</a>
+                        {% if current_user.is_authenticated %}
+							<div class="dropdown">
+								{% if current_user.__class__.__name__ == 'Customer' %}
+									<button class="nav-link navbar-nav-right">{{ current_user.first_name }}</button>
+									<div class="dropdown-content">
+										<a href="{{ url_for('order') }}">Orders</a>
+										<a href="{{ url_for('logout') }}">Logout</a>
+									</div>
+								{% elif current_user.__class__.__name__ == 'Artisan' %}
+									<button class="nav-link navbar-nav-right">Account</button>
+									<div class="dropdown-content">
+										<a href="{{ url_for('artisan', artisan_id=current_user.id) }}" class="artisan-profile-redirection">Profile</a>
+                                        <a href="#" class="artisan-profile-redirection">Orders</a>
+										<a href="{{ url_for('logout') }}">Logout</a>
+									</div>
+								{% endif %}
+							</div>
+                        {% else %}
+                            <a href="{{ url_for('sign_in') }}" class="nav-link">Sign In</a>
+                        {% endif %}
+						{% if current_user.is_authenticated %}
+							{% if current_user.__class__.__name__ == 'Customer' %}
+								<a href = "{{ url_for('order') }}" class = "cart">
+									<img src="../static/images/cart-icon.png" class="cart-icon" style="height:17px">
+									<div class="number-items">
+										<h6 class="cart-total"></h6>
+									</div>
+								</a>
+							{% elif current_user.__class__.__name__ == 'Artisan' %}
+								<a href = "{{ url_for('artisan_orders', artisan_id=current_user.id) }}" class = "cart" data-artisan-id="{{ current_user.id }}">
+									<img src="../static/images/bell-icon.png" class="cart-icon" style="height:17px">
+									<div class="number-items">
+										<h6 class="cart-total"></h6>
+									</div>
+								</a>
+							{% endif %}
+						{% endif %}
+					</ul>
+					<!-- hamburger menu icon -->
+					<button type = "button" class = "navbar-toggler">
+						<i class = "fa fa-bars"></i>
+					</button>
+					<!-- end of hamburger menu icon -->
+				</div>
+			</nav>
+		</header>
+		<!-- end of header -->
+
+
+        <!-- Orders section -->
+		<section id="cart">
+			<div class="container" id="artisan_orders">
+				<div class="order-info">
+					<h2 class="customer-name">{{ current_user.name }}</h2>
+					<div class="cart-info" data-artisan-id="{{ artisan.id }}">
+						<h1>Orders</h1>
+					</div>
+					<h4 class="date" id="current-date">Friday 26/04/2024</h4>
+				</div>
+				<div class="order-items" id="a-orders">
+				</div>
+			</div>
+		</section>
+        <!-- end of Orders section -->
+
+
+		<!-- footer -->
+		<footer id = "footer">
+			<div class = "container footer-grid">
+				<div class = "footer-item one">
+					<a href = "#" class = "navbar-brand"><span class = "brand-text">India's Artisans</span></a>
+					<p class = "text">Welcome to the digital home of local makers and artisans, The place to find unique and beautiful items to treat yourself, enhance your home decor, or find a memorable gift.</p>
+				</div>
+
+				<div class = "footer-item">
+					<ul class = "footer-links">
+						<li><a href = "{{ url_for('home') }}">Home</a></li>
+						<li><a href = "{{ url_for('explore_artisans') }}">Artisans</a></li>
+						<li><a href = "{{ url_for('explore_products') }}">Products</a></li>
+						<li><a href = "{{ url_for('artisan_sign_up') }}">Sell With Us</a></li>
+						<li><a href = "{{ url_for('about') }}">About</a></li>
+					</ul>
+				</div>
+
+				<div class = "footer-item four">
+					<h4>Contact Us</h4>
+					<span>   IndiasArtisans@gmail.com   </span>
+				</div>
+			</div>
+		</footer>
+		<!-- end of footer -->
+	</body>
+</html>

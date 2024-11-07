@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{{ artisan.name }}</title>
+		<link rel = "stylesheet" href = "../static/styles/home.css">
+        <link rel = "stylesheet" href = "../static/styles/explore_products.css">
+		<link rel="stylesheet" href="../static/styles/artisan.css">
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+		<link rel="icon" href="../static/images/logo.png" />
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<!-- Import JavaScript file -->
+		<script type="text/javascript" src="../static/scripts/artisan.js"></script>
+	</head>
+	<body>
+
+		<!-- header -->
+		<header id = "header">
+
+			<!-- top navbar -->
+			<nav class = "top-navbar flex">
+				<div class = "container flex">
+					<!-- logo -->
+					<a href = "{{ url_for('home') }}" class = "navbar-brand flex">
+						<div class="logo"></div>
+						<span class = "brand-text">India's Artisans</span>
+					</a>
+					<!-- end of logo -->
+					<ul class = "navbar-nav-right flex">
+						<a href = "{{ url_for('home') }}" class = "nav-link">Home</a>
+                        <a href = "{{ url_for('explore_artisans') }}" class = "nav-link">Artisans</a>
+                        <a href = "{{ url_for('explore_products') }}" class = "nav-link">Products</a>
+                        {% if not current_user.is_authenticated %}
+                            <a href = "{{ url_for('artisan_sign_up') }}" class = "nav-link">Sell With Us</a>
+                        {% endif %}
+                        <a href = "{{ url_for('about') }}" class = "nav-link">About</a>
+                        {% if current_user.is_authenticated %}
+                            <div class="dropdown">
+								{% if current_user.__class__.__name__ == 'Customer' %}
+									<button class="nav-link navbar-nav-right">{{ current_user.first_name }}</button>
+									<div class="dropdown-content">
+										<a href="{{ url_for('order') }}">Cart</a>
+                                        <a href="{{ url_for('customer_archive') }}">Orders</a>
+										<a href="{{ url_for('logout') }}">Logout</a>
+									</div>
+								{% elif current_user.__class__.__name__ == 'Artisan' %}
+									<button class="nav-link navbar-nav-right">Account</button>
+									<div class="dropdown-content">
+										<a href="{{ url_for('artisan', artisan_id=current_user.id) }}" class="artisan-profile-redirection">Profile</a>
+										<a href="{{ url_for('artisan_orders', artisan_id=current_user.id) }}" class="artisan-profile-redirection">Orders</a>
+										<a href="{{ url_for('logout') }}">Logout</a>
+                                	</div>
+								{% endif %}
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('sign_in') }}" class="nav-link">Sign In</a>
+                        {% endif %}
+						{% if current_user.is_authenticated %}
+							{% if current_user.__class__.__name__ == 'Customer' %}
+								<a href = "{{ url_for('order') }}" class = "cart" data-order-id="{{ order.id }}">
+									<img src="../static/images/cart-icon.png" class="cart-icon" style="height:17px">
+									<div class="number-items">
+										<h6 class="cart-total"></h6>
+									</div>
+								</a>
+							{% elif current_user.__class__.__name__ == 'Artisan' %}
+								<a href = "{{ url_for('artisan_orders', artisan_id=current_user.id) }}" class = "cart" data-artisan-id="{{ current_user.id }}">
+									<img src="../static/images/bell-icon.png" class="cart-icon" style="height:17px">
+									<div class="number-items">
+										<h6 class="cart-total"></h6>
+									</div>
+								</a>
+							{% endif %}
+						{% endif %}
+					</ul>
+					<!-- hamburger menu icon -->
+					<button type = "button" class = "navbar-toggler">
+						<i class = "fa fa-bars"></i>
+					</button>
+					<!-- end of hamburger menu icon -->
+				</div>
+			</nav>
+		</header>
+		<!-- end of header -->
+
+		<!-- artisan -->
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+				{% for category, message in messages %}
+					<div class="alert">
+						{{ message }}
+					</div>
+				{% endfor %}
+			{% endif %}
+		{% endwith %}
+        <div class="artisan-container">
+            <div class="artisan-image">
+                <img src="{{ artisan.picture }}" alt="Artisan Image">
+                <!--<button class="update-button">Update Your picture</button>-->
+            </div>
+            <div class="artisan-details">
+                <h2 class="artisan_name">{{ artisan.name }}</h2>
+                <h1 class="artisan_crafts">
+                    {% for craft in artisan.crafts %}
+                        {{ craft.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </h1>
+				<!--<p class="description">description</p>-->
+                <div class="description">{{ artisan.description }}</div>
+            </div>
+			{% if current_user == artisan %}
+			<div class="update-div">
+				<a href="{{ url_for('update_profile', artisan_id=current_user.id) }}" class="update-profile"  data-tooltip="Update your profile">
+					<img src="../static/images/update-profile-icon.png" alt="edit" class="update-profile-button">
+				</a>
+			</div>
+			{% endif %}
+        </div>
+		<!-- end of artisan -->
+
+
+        <!-- products section -->
+        <section id="products">
+            <div class="container">
+                <ul class="products-grid grid">
+					{% if current_user == artisan %}
+						<a href="{{ url_for('add_product') }}" class="add-item">
+							<div class="add-product">
+								<img src="../static/images/add-icon.png">
+							</div>
+							<div class="add-label">
+								<span class="add-text">Add Product</span>
+							</div>
+						</a>
+					{% endif %}
+                    {% for product in artisan.products %}
+                    <li class="products-item" data-product-id="{{ product.id }}">
+                        <div class="item-img">
+							{% if current_user == artisan %}
+								<div class="remove-btn" data-tooltip="Remove">X</div>
+								<div class="edit-button"  data-tooltip="Edit">
+									<a href="{{ url_for('update_product', product_id=product.id) }}">
+										<img src="../static/images/edit-icon.png" alt="edit" class="edit-icon">
+									</a>
+								</div>
+							{% endif %}
+                            <img src="{{ product.picture }}">
+                        </div>
+                        <div class="item-info">
+                            <span class="name">{{ product.name }}</span>
+                            {% for crft in crafts %}
+                                {% if crft.id == product.craft_id %}
+                                    <section class="craft-name"><h4 class="craft-name">{{ crft.name }}</h4></section>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="price">${{ product.price }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+        <!-- end of products section -->
+
+		<!-- footer -->
+		<footer id = "footer">
+			<div class = "container footer-grid">
+				<div class = "footer-item one">
+					<a href = "#" class = "navbar-brand"><span class = "brand-text">India's Artisans</span></a>
+					<p class = "text">Welcome to the digital home of local makers and artisans, The place to find unique and beautiful items to treat yourself, enhance your home decor, or find a memorable gift.</p>
+				</div>
+
+				<div class = "footer-item">
+					<ul class = "footer-links">
+						<li><a href = "{{ url_for('home') }}">Home</a></li>
+						<li><a href = "{{ url_for('explore_artisans') }}">Artisans</a></li>
+						<li><a href = "{{ url_for('explore_products') }}">Products</a></li>
+						<li><a href = "{{ url_for('artisan_sign_up') }}">Sell With Us</a></li>
+						<li><a href = "{{ url_for('about') }}">About</a></li>
+					</ul>
+				</div>
+
+				<div class = "footer-item four">
+					<h4>Contact Us</h4>
+					<span>   IndiasArtisans@gmail.com   </span>
+				</div>
+			</div>
+		</footer>
+		<!-- end of footer -->
+	</body>
+</html>

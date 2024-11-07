@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Products</title>
+    <!-- css -->
+    <link rel = "stylesheet" href = "../static/styles/explore_products.css">
+    <!-- logo icon -->
+    <link rel="icon" href="../static/images/logo.png" />
+    <!-- Import JQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <!-- Import JavaScript file -->
+    <script type="text/javascript" src="../static/scripts/explore_products.js"></script>
+</head>
+<body>
+    <!-- header -->
+    <header id = "header">
+        <!-- top navbar -->
+        <nav class = "top-navbar flex">
+            <div class = "container flex">
+                <!-- logo -->
+                <a href = "{{ url_for('home') }}" class = "navbar-brand flex">
+                    <div class="logo"></div>
+                    <span class = "brand-text">India's Artisans</span>
+                </a>
+                <!-- end of logo -->
+                <ul class="navbar-nav-right flex">
+                    <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                    <a href="{{ url_for('explore_artisans') }}" class="nav-link">Artisans</a>
+                    <a href="#" class="nav-link active">Products</a>
+                    {% if not current_user.is_authenticated %}
+                        <a href = "{{ url_for('artisan_sign_up') }}" class = "nav-link">Sell With Us</a>
+                    {% endif %}
+                    <a href = "{{ url_for('about') }}" class = "nav-link">About</a>
+                    {% if current_user.is_authenticated %}
+                        <div class="dropdown">
+                            {% if current_user.__class__.__name__ == 'Customer' %}
+                                <button class="nav-link navbar-nav-right">{{ current_user.first_name }}</button>
+                                <div class="dropdown-content">
+                                    <a href="{{ url_for('order') }}">Cart</a>
+                                    <a href="{{ url_for('customer_archive') }}">Orders</a>
+                                    <a href="{{ url_for('logout') }}">Logout</a>
+                                </div>
+                            {% elif current_user.__class__.__name__ == 'Artisan' %}
+                                <button class="nav-link navbar-nav-right">Account</button>
+                                <div class="dropdown-content">
+                                    <a href="{{ url_for('artisan', artisan_id=current_user.id) }}" class="artisan-profile-redirection">Profile</a>
+                                    <a href="{{ url_for('artisan_orders', artisan_id=current_user.id) }}" class="artisan-profile-redirection">Orders</a>
+                                    <a href="{{ url_for('logout') }}">Logout</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('sign_in') }}" class="nav-link">Sign In</a>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.__class__.__name__ == 'Customer' %}
+                            <a href = "{{ url_for('order') }}" class = "cart" data-order-id="{{ order.id }}">
+                                <img src="../static/images/cart-icon.png" class="cart-icon" style="height:17px">
+                                <div class="number-items">
+                                    <h6 class="cart-total"></h6>
+                                </div>
+                            </a>
+                        {% elif current_user.__class__.__name__ == 'Artisan' %}
+                            <a href = "{{ url_for('artisan_orders', artisan_id=current_user.id) }}" class = "cart" data-artisan-id="{{ current_user.id }}">
+                                <img src="../static/images/bell-icon.png" class="cart-icon" style="height:17px">
+                                <div class="number-items">
+                                    <h6 class="cart-total"></h6>
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <!-- end of top navbar -->
+    </header>
+    <!-- end of header -->
+
+    <!-- products section -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+				{% for category, message in messages %}
+					<div class="alert">
+						{{ message }}
+					</div>
+				{% endfor %}
+			{% endif %}
+		{% endwith %}
+    <section id="products">
+        <div class="container">
+            <section class="filters">
+                <div class="crafts">
+                    <h3>▾ Filter by Crafts</h3>
+                    <h4>&nbsp;</h4>
+                    <div class="popover">
+                        <ul>
+				{% for craft in crafts %}
+				<li><input type="checkbox" data-id="{{ craft.id }}" data-name="{{ craft.name }}"><h2>{{ craft.name }}</h2></li>
+				{% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <button class="button">Search</button>
+            </section>
+	    	<section class="products">
+			<ul class="products-grid grid">
+			</ul>
+	    	</section>
+        </div>
+    </section>
+    <!-- end of products section -->
+
+    <!-- footer -->
+    <footer id = "footer">
+        <div class = "container footer-grid">
+            <div class = "footer-item one">
+                <a href = "#" class = "navbar-brand"><span class = "brand-text">India's Artisans</span></a>
+                <p class = "text">Welcome to the digital home of local makers and artisans, The place to find unique and beautiful items to treat yourself, enhance your home decor, or find a memorable gift.</p>
+            </div>
+
+            <div class = "footer-item">
+                <ul class = "footer-links">
+                    <li><a href = "{{ url_for('home') }}">Home</a></li>
+                    <li><a href = "{{ url_for('explore_artisans') }}">Artisans</a></li>
+                    <li><a href = "#">Products</a></li>
+                    <li><a href = "{{ url_for('artisan_sign_up') }}">Sell With Us</a></li>
+                    <li><a href = "{{ url_for('about') }}">About</a></li>
+                </ul>
+            </div>
+
+            <div class = "footer-item four">
+                <h4>Contact Us</h4>
+                <span>   IndiasArtisans@gmail.com   </span>
+            </div>
+        </div>
+    </footer>
+    <!-- end of footer -->
+</body>
+</html>
